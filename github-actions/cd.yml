@@ -1,0 +1,51 @@
+name: Continuous Deployment
+"on":
+  push:
+    branches:
+      - main
+jobs:
+  deploy-dev:
+    name: Build and Test. Pushes to main will deploy to development.
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    environment: development
+    env:
+      CDK_ACCOUNT: ${{ vars.CDK_ACCOUNT}}
+      CDK_REGION: ${{ vars.CDK_REGION}}
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME}}
+      ENVIRONMENT: ${{ vars.ENVIRONMENT}}
+      SUBDOMAIN_NAME: ${{ vars.SUBDOMAIN_NAME}}
+      NEXT_PUBLIC_ENVIRONMENT: ${{ vars.ENVIRONMENT}}
+      REACT_APP_ENVIRONMENT: ${{ vars.ENVIRONMENT}}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Assume role using OIDC
+        uses: aws-actions/configure-aws-credentials@v3-node20
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.CDK_ACCOUNT}}:role/github-ci-role
+          aws-region: us-east-1
+      - name: Cache turbo build setup
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules/.cache/turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Deploy
+        run: pnpm run deploy

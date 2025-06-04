@@ -1,0 +1,51 @@
+name: CD
+"on":
+  release:
+    types: [published]
+jobs:
+  deploy-production:
+    name: Build/Test/Deploy to Production
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      # REQUIRED ENV VARS
+      CDK_ACCOUNT: ${{ vars.CDK_ACCOUNT}}
+      CDK_REGION: ${{ vars.CDK_REGION}}
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME}}
+      ENVIRONMENT: ${{ vars.ENVIRONMENT}}
+      NEXT_PUBLIC_ENVIRONMENT: ${{ vars.ENVIRONMENT}}
+      # OPTIONAL ENV VARS
+      HOSTED_ZONE_ID: ${{ vars.HOSTED_ZONE_ID}}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Assume role using OIDC
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.CDK_ACCOUNT}}:role/github-ci-role
+          aws-region: us-east-1
+      - name: Cache turbo build setup
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules/.cache/turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Deploy
+        run: pnpm run deploy
