@@ -16,7 +16,7 @@ This repository contains multiple working example projects. These are excerpts f
    - [README](./infra-as-code/aws-cdk/README.md)
 
 4. **React Single Page Application**
-   - Description: A tRPC client implementation for consuming API endpoints.
+   - Description: A basic react SPA implementation for consuming API endpoints. Written in typescript and leveraging libraries Material UI & Redux.
    - [README](./react-spa/README.md)
 
 Feel free to navigate to each project directory and explore its README file for more details.

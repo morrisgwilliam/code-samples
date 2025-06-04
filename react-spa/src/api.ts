@@ -1,7 +1,7 @@
 import { BalldontlieAPI } from '@balldontlie/sdk';
 import type { NBATeam, NBAPlayer } from '@balldontlie/sdk';
 
-export const DEFAULT_API_KEY = 'c2176183-0c33-41e3-9cde-2e7511078fa0'
+export const DEFAULT_API_KEY = 'bdbc6898-0f12-4fab-8417-f7d2bb55d09b'
 
 const config = {
   apiKey: DEFAULT_API_KEY,
