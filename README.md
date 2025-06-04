@@ -1,6 +1,5 @@
-# Project Index
-
-This repository contains multiple working example projects These are excerpts from personal project that have been modified to be simple and generic. Below is a list of all the projects with links to their respective README files:
+# Code Samples
+This repository contains multiple working example projects. These are excerpts from personal project that have been modified to be simple and generic. Below is a list of all the projects with links to their respective README files:
 
 ## Projects
 
